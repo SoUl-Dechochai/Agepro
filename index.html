@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมคำนวณอายุ 65 ปี</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom CSS for Ministry of Labour purple and background image */
+        body {
+            font-family: 'Inter', sans-serif; /* Using Inter font as requested */
+            background-color: #6A0DAD; /* Deep purple, similar to Ministry of Labour */
+            background-image: url('https://placehold.co/1920x1080/6A0DAD/FFFFFF?text=Working+Abroad'); /* Placeholder for working abroad image */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Ensures background image stays fixed */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Adjusting backdrop filter for better readability over background image */
+        .card-container {
+            background-color: rgba(255, 255, 255, 0.85); /* Slightly transparent white */
+            backdrop-filter: blur(10px); /* Blurs the background behind the card */
+            -webkit-backdrop-filter: blur(10px); /* Safari support */
+        }
+
+        /* Gold-yellow border for inputs */
+        input[type="text"] {
+            border: 2px solid #FFD700; /* Gold-yellow */
+            outline: none; /* Remove default outline */
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: #DAA520; /* Darker gold on focus */
+        }
+
+        /* Style for buttons */
+        button {
+            background-color: #FFD700; /* Gold-yellow */
+            color: #6A0DAD; /* Purple text */
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #DAA520; /* Darker gold on hover */
+            transform: translateY(-2px);
+        }
+
+        /* Responsive adjustments for smaller screens */
+        @media (max-width: 768px) {
+            .card-container {
+                width: 95%;
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .text-lg {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-purple-900 text-gray-800">
+    <div class="card-container bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg">
+        <h1 class="text-3xl font-extrabold text-center text-purple-800 mb-6">โปรแกรมคำนวณอายุ</h1>
+        <p class="text-lg text-center text-gray-600 mb-8">
+            กรุณากรอกวันเกิดของคุณในรูปแบบ: วัน/เดือน/ปี พ.ศ. (เช่น 01/01/2540)
+        </p>
+
+        <div class="mb-6">
+            <label for="birthDate" class="block text-gray-700 text-sm font-semibold mb-2">กรอกวันเกิด:</label>
+            <input
+                type="text"
+                id="birthDate"
+                class="w-full p-3 rounded-lg text-lg text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-yellow-500"
+                placeholder="ตัวอย่าง: 01/01/2540"
+            >
+            <p id="error-message" class="text-red-500 text-sm mt-2 hidden">รูปแบบวันที่ไม่ถูกต้อง หรือวันที่ไม่ถูกต้อง กรุณาลองใหม่</p>
+        </div>
+
+        <button
+            onclick="calculateAndDisplayAge()"
+            class="w-full py-3 px-4 rounded-lg text-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+        >
+            คำนวณ
+        </button>
+
+        <div id="results" class="mt-8 p-6 bg-purple-50 rounded-lg shadow-inner hidden">
+            <h2 class="text-2xl font-bold text-purple-700 mb-4">ผลลัพธ์:</h2>
+            <p id="current-age" class="text-xl text-gray-700 mb-2"></p>
+            <p id="age-65-date" class="text-xl text-gray-700 mb-4"></p>
+            <p id="note-message" class="text-md text-gray-600 italic"></p>
+        </div>
+    </div>
+
+    <script>
+        // Dictionary to map month numbers to Thai month names
+        const thaiMonths = {
+            1: "มกราคม", 2: "กุมภาพันธ์", 3: "มีนาคม", 4: "เมษายน",
+            5: "พฤษภาคม", 6: "มิถุนายน", 7: "กรกฎาคม", 8: "สิงหาคม",
+            9: "กันยายน", 10: "ตุลาคม", 11: "พฤศจิกายน", 12: "ธันวาคม"
+        };
+
+        /**
+         * Calculates age in years, months, and days from a given birth date.
+         * @param {Date} birthDate - A Date object representing the birth date (A.D.).
+         * @returns {object} An object with years, months, and days.
+         */
+        function calculateAge(birthDate) {
+            const today = new Date();
+            let years = today.getFullYear() - birthDate.getFullYear();
+            let months = today.getMonth() - birthDate.getMonth();
+            let days = today.getDate() - birthDate.getDate();
+
+            // Adjust months and years if the current day is less than the birth day
+            if (days < 0) {
+                months -= 1;
+                const prevMonthDate = new Date(today.getFullYear(), today.getMonth(), 0); // Last day of previous month
+                days += prevMonthDate.getDate();
+            }
+
+            if (months < 0) {
+                years -= 1;
+                months += 12;
+            }
+
+            return { years, months, days };
+        }
+
+        /**
+         * Calculates the exact date when a person will turn 65 years old.
+         * @param {Date} birthDate - A Date object representing the birth date (A.D.).
+         * @returns {Date} A Date object representing the 65th birthday.
+         */
+        function calculate65thBirthday(birthDate) {
+            const targetYear = birthDate.getFullYear() + 65;
+            const targetMonth = birthDate.getMonth(); // Month is 0-indexed
+            const targetDay = birthDate.getDate();
+
+            let age65Date;
+            try {
+                age65Date = new Date(targetYear, targetMonth, targetDay);
+                // Check if the date rolled over due to invalid day (e.g., Feb 29 in non-leap year)
+                if (age65Date.getMonth() !== targetMonth) {
+                    // If it rolled over, it means the original day was invalid for that month/year.
+                    // Adjust to the last day of the target month or March 1st for Feb 29
+                    if (targetMonth === 1 && targetDay === 29) { // February (0-indexed)
+                         age65Date = new Date(targetYear, 2, 1); // March 1st
+                    } else {
+                        age65Date = new Date(targetYear, targetMonth + 1, 0); // Last day of target month
+                    }
+                }
+            } catch (e) {
+                // Fallback for any unexpected date creation errors
+                console.error("Error creating 65th birthday date:", e);
+                // A more robust error handling might be needed here, but for simplicity,
+                // we'll let the user know about invalid input.
+            }
+            return age65Date;
+        }
+
+        /**
+         * Parses date input (day/month/Buddhist year) from the user and validates it.
+         * Converts Buddhist year to A.D. year for Date object creation.
+         * @param {string} dateString - The date string in "DD/MM/YYYY_BE" format.
+         * @returns {Date|null} A Date object (A.D.) if the input is valid, otherwise null.
+         */
+        function parseDateInput(dateString) {
+            const parts = dateString.split('/');
+            if (parts.length !== 3) {
+                return null;
+            }
+
+            const day = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10);
+            const yearBE = parseInt(parts[2], 10);
+
+            if (isNaN(day) || isNaN(month) || isNaN(yearBE)) {
+                return null;
+            }
+
+            // Convert Buddhist Era (พ.ศ.) to A.D. (ค.ศ.)
+            const yearAD = yearBE - 543;
+
+            // Create a Date object. Month is 0-indexed in JavaScript Date.
+            const birthDate = new Date(yearAD, month - 1, day);
+
+            // Validate if the date object created is actually the date entered (handles invalid dates like Feb 30)
+            if (birthDate.getFullYear() !== yearAD ||
+                birthDate.getMonth() !== (month - 1) ||
+                birthDate.getDate() !== day) {
+                return null; // Invalid date (e.g., 31/02/2560)
+            }
+
+            return birthDate;
+        }
+
+        /**
+         * Calculates and displays the age and 65th birthday.
+         */
+        function calculateAndDisplayAge() {
+            const birthDateInput = document.getElementById('birthDate');
+            const errorMessage = document.getElementById('error-message');
+            const resultsDiv = document.getElementById('results');
+            const currentAgePara = document.getElementById('current-age');
+            const age65DatePara = document.getElementById('age-65-date');
+            const noteMessagePara = document.getElementById('note-message');
+
+            // Hide previous results and error messages
+            resultsDiv.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+            noteMessagePara.textContent = ''; // Clear previous note
+
+            const birthDateAD = parseDateInput(birthDateInput.value.trim());
+
+            if (!birthDateAD) {
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            // Calculate current age
+            const { years, months, days } = calculateAge(birthDateAD);
+            currentAgePara.textContent = `ปัจจุบันคุณอายุ ${years} ปี ${months} เดือน ${days} วัน`;
+
+            // Calculate 65th birthday
+            const age65DateAD = calculate65thBirthday(birthDateAD);
+
+            if (age65DateAD) {
+                const age65YearBE = age65DateAD.getFullYear() + 543;
+                const age65MonthThai = thaiMonths[age65DateAD.getMonth() + 1]; // Month is 0-indexed in JS, 1-indexed for thaiMonths
+                age65DatePara.textContent = `คุณจะอายุครบ 65 ปี ในวันที่ ${age65DateAD.getDate()} เดือน${age65MonthThai} ปี พ.ศ. ${age65YearBE}`;
+
+                // Optional: Display message based on birth year (พ.ศ.) conditions
+                const birthYearBE = birthDateAD.getFullYear() + 543; // Convert birth year back to B.E. for comparison
+                let note = "";
+                if (birthYearBE <= 2503) {
+                    note = `(หมายเหตุ: คุณสามารถยื่นขอรับเงินบำเหน็จชราภาพได้ตั้งแต่วันที่ ${age65DateAD.getDate()} เดือน${age65MonthThai} ปี พ.ศ. ${age65YearBE} เป็นต้นไป)`;
+                } else if (birthYearBE >= 2504) { // Grouping 2504, 2505, 2506+ as "after"
+                    note = `(หมายเหตุ: คุณสามารถยื่นขอรับเงินบำเหน็จชราภาพได้หลังจากวันที่ ${age65DateAD.getDate()} เดือน${age65MonthThai} ปี พ.ศ. ${age65YearBE} เป็นต้นไป)`;
+                }
+                noteMessagePara.textContent = note;
+            } else {
+                age65DatePara.textContent = "ไม่สามารถคำนวณวันเกิด 65 ปีได้";
+            }
+
+            resultsDiv.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
