@@ -72,8 +72,9 @@
 <body class="bg-purple-900 text-gray-800">
     <div class="card-container bg-white p-8 rounded-xl shadow-2xl w-full max-w-lg">
         <h1 class="text-3xl font-extrabold text-center text-purple-800 mb-6">โปรแกรมคำนวณอายุ</h1>
+        <h1 class="text-2xl font-extrabold text-center text-purple-700 mb-6">ผู้ประสงค์ยื่นขอรับเงินบำเหน็จชราภาพ</h1>
         <p class="text-lg text-center text-gray-600 mb-8">
-            กรุณากรอกวันเกิดของคุณในรูปแบบ: วัน/เดือน/ปี พ.ศ. (เช่น 01/01/2540)
+            กรุณากรอกวันเกิดของคุณในรูปแบบ : วัน/เดือน/ปีพ.ศ.
         </p>
 
         <div class="mb-6">
@@ -89,16 +90,16 @@
 
         <button
             onclick="calculateAndDisplayAge()"
-            class="w-full py-3 px-4 rounded-lg text-lg shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+            class="w-full py-3 px-4 rounded-lg text-xl shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
         >
-            คำนวณ
+            คำนวณอายุ
         </button>
 
         <div id="results" class="mt-8 p-6 bg-purple-50 rounded-lg shadow-inner hidden">
             <h2 class="text-2xl font-bold text-purple-700 mb-4">ผลลัพธ์:</h2>
-            <p id="current-age" class="text-xl text-gray-700 mb-2"></p>
-            <p id="age-65-date" class="text-xl text-gray-700 mb-4"></p>
-            <p id="note-message" class="text-md text-gray-600 italic"></p>
+            <p id="current-age" class="text-2xl text-center text-gray-700 mb-2"></p>
+            <p id="age-65-date" class="text-xl text-center text-purple-600 mb-4"></p>
+            <p id="note-message" class="text-md text-center text-red-600 italic"></p>
         </div>
     </div>
 
